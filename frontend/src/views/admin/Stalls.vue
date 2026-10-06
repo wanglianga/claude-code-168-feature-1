@@ -36,18 +36,27 @@
             <el-table-column label="区域" min-width="140">
               <template #default="{ row }">{{ row.zone?.name }}</template>
             </el-table-column>
+            <el-table-column label="路面" width="70">
+              <template #default="{ row }">
+                <el-tag v-if="row.hardened" type="success" size="small">硬化</el-tag>
+                <el-tag v-else type="danger" size="small">低洼</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="电源" width="60">
               <template #default="{ row }">{{ row.hasPower ? '有' : '无' }}</template>
             </el-table-column>
             <el-table-column label="限车长" width="80">
               <template #default="{ row }">{{ row.maxVehicleLength ? row.maxVehicleLength + 'm' : '不限' }}</template>
             </el-table-column>
-            <el-table-column label="临消防" width="70">
+            <el-table-column label="消防距离" width="80">
+              <template #default="{ row }">{{ row.fireLaneDistance != null ? row.fireLaneDistance + 'm' : (row.nearFireLane ? '临通道' : '-') }}</template>
+            </el-table-column>
+            <el-table-column label="应急位" width="70">
               <template #default="{ row }">
-                <el-tag v-if="row.nearFireLane" type="danger" size="small">是</el-tag><span v-else>否</span>
+                <el-tag v-if="row.reservedEmergency" type="warning" size="small">应急</el-tag><span v-else>-</span>
               </template>
             </el-table-column>
-            <el-table-column label="状态" width="80">
+            <el-table-column label="状态" width="70">
               <template #default="{ row }">
                 <el-tag :type="row.active ? 'success' : 'info'" size="small">{{ row.active ? '启用' : '停用' }}</el-tag>
               </template>
@@ -82,17 +91,31 @@
       </template>
     </el-dialog>
 
-    <el-dialog v-model="stallVisible" title="摊位" width="440px">
-      <el-form :model="stallForm" label-width="110px">
+    <el-dialog v-model="stallVisible" title="摊位" width="460px">
+      <el-form :model="stallForm" label-width="120px">
         <el-form-item label="摊位号"><el-input v-model="stallForm.stallNo" :disabled="!!stallForm.id" /></el-form-item>
         <el-form-item label="所属区域">
           <el-select v-model="stallForm.zoneId" style="width: 100%">
             <el-option v-for="z in zones" :key="z.id" :label="z.name" :value="z.id" />
           </el-select>
         </el-form-item>
+        <el-form-item label="硬化路面">
+          <el-switch v-model="stallForm.hardened" active-text="硬化(雨天可调入)" inactive-text="低洼易积水" />
+        </el-form-item>
+        <el-form-item label="应急备用位">
+          <el-switch v-model="stallForm.reservedEmergency" active-text="仅临时/雨天调位用，不参与抽签" />
+        </el-form-item>
         <el-form-item label="有电源"><el-switch v-model="stallForm.hasPower" /></el-form-item>
         <el-form-item label="限车长(米)"><el-input-number v-model="stallForm.maxVehicleLength" :min="0" :step="0.5" /></el-form-item>
-        <el-form-item label="临消防通道"><el-switch v-model="stallForm.nearFireLane" /></el-form-item>
+        <el-form-item label="紧邻消防通道"><el-switch v-model="stallForm.nearFireLane" /></el-form-item>
+        <el-form-item label="距消防通道(米)">
+          <el-input-number v-model="stallForm.fireLaneDistance" :min="0" :step="0.1" :precision="1" />
+        </el-form-item>
+        <el-form-item label="平面图坐标(米)">
+          <el-input-number v-model="stallForm.posX" :step="0.5" placeholder="X" style="width: 110px" />
+          <el-input-number v-model="stallForm.posY" :step="0.5" placeholder="Y" style="width: 110px;margin-left:8px" />
+          <div class="text-muted" style="font-size:12px">用于自动计算消防距离与邻摊影响</div>
+        </el-form-item>
         <el-form-item label="启用"><el-switch v-model="stallForm.active" /></el-form-item>
       </el-form>
       <template #footer>
@@ -140,7 +163,7 @@ async function saveZone() {
 function editStall(s) {
   stallForm.value = s.id
     ? { ...s, zoneId: s.zone?.id }
-    : { stallNo: '', zoneId: zones.value[0]?.id, hasPower: false, maxVehicleLength: 5, nearFireLane: false, active: true }
+    : { stallNo: '', zoneId: zones.value[0]?.id, hardened: true, reservedEmergency: false, hasPower: false, maxVehicleLength: 5, nearFireLane: false, fireLaneDistance: null, posX: null, posY: null, active: true }
   stallVisible.value = true
 }
 

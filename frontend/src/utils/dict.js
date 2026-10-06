@@ -44,7 +44,8 @@ export const COMPLAINT_STATUS = {
 
 export const ADJUST_TYPES = {
   RELOCATE: '临时调位', RAIN_RELOCATE: '雨天调位', FEE_WAIVER: '费用减免',
-  DEPOSIT_PENALTY: '保证金扣罚', CREDIT_ADJUST: '信用调整', CATEGORY_CHANGE: '品类变更'
+  DEPOSIT_PENALTY: '保证金扣罚', CREDIT_ADJUST: '信用调整', CATEGORY_CHANGE: '品类变更',
+  RAIN_ABANDON: '雨天拒绝-放弃经营', RAIN_RISK_SELF: '雨天拒绝-风险自担'
 }
 
 export const ADJUST_SOURCES = {
@@ -56,6 +57,19 @@ export const RESULT_STATUS = {
   ASSIGNED: { text: '已分配', type: 'success' },
   RELOCATED: { text: '已调位', type: 'warning' },
   CANCELLED: { text: '已取消', type: 'info' }
+}
+
+export const RAIN_STATUS = {
+  PROPOSED: { text: '待确认', type: 'warning' },
+  CONFIRMED: { text: '摊主已同意', type: 'primary' },
+  COMPLETED: { text: '已完成归档', type: 'success' },
+  ABANDONED: { text: '拒绝-放弃经营', type: 'danger' },
+  RISK_SELF: { text: '拒绝-风险自担', type: 'danger' }
+}
+
+export const PAY_ITEM_TYPES = {
+  STALL_FEE: '摊位费', SANITATION: '卫生费', POWER: '电费', DEPOSIT: '经营保证金',
+  PENALTY: '扣罚款', FEE_DIFF: '调位补收差额', FEE_REFUND: '调位应退差额'
 }
 
 export function catName(code) { return CATEGORIES[code] || code || '-' }

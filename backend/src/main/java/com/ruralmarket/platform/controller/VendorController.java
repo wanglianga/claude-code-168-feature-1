@@ -5,6 +5,7 @@ import com.ruralmarket.platform.config.BizException;
 import com.ruralmarket.platform.entity.*;
 import com.ruralmarket.platform.repository.*;
 import com.ruralmarket.platform.service.Constants;
+import com.ruralmarket.platform.service.RainRelocationService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +28,15 @@ public class VendorController {
     private final AdjustmentRepository adjustmentRepository;
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
+    private final RainRelocationRepository rainRelocationRepository;
+    private final RainRelocationService rainRelocationService;
 
     public VendorController(ApplicationRepository applicationRepository, MarketEventRepository eventRepository,
                             LotteryResultRepository resultRepository, PaymentRepository paymentRepository,
                             FoodSampleRepository sampleRepository, CreditLogRepository creditLogRepository,
                             AdjustmentRepository adjustmentRepository, ComplaintRepository complaintRepository,
-                            UserRepository userRepository) {
+                            UserRepository userRepository, RainRelocationRepository rainRelocationRepository,
+                            RainRelocationService rainRelocationService) {
         this.applicationRepository = applicationRepository;
         this.eventRepository = eventRepository;
         this.resultRepository = resultRepository;
@@ -42,6 +46,8 @@ public class VendorController {
         this.adjustmentRepository = adjustmentRepository;
         this.complaintRepository = complaintRepository;
         this.userRepository = userRepository;
+        this.rainRelocationRepository = rainRelocationRepository;
+        this.rainRelocationService = rainRelocationService;
     }
 
     private User me() {
@@ -189,5 +195,30 @@ public class VendorController {
         c.setType(req.type());
         c.setDescription(req.description());
         return complaintRepository.save(c);
+    }
+
+    // ===== 雨天临时调位确认 =====
+    @GetMapping("/rain-relocations")
+    public List<RainRelocation> myRainRelocations() {
+        return rainRelocationRepository.findByVendorIdOrderByCreatedAtDesc(me().getId());
+    }
+
+    @GetMapping("/rain-relocations/{id}")
+    public RainRelocation rainDetail(@PathVariable Long id) {
+        RainRelocation rr = rainRelocationRepository.findById(id)
+                .orElseThrow(() -> new BizException("调位单不存在"));
+        if (!rr.getVendor().getId().equals(me().getId())) throw new BizException("无权查看他人调位单");
+        return rr;
+    }
+
+    /**
+     * 摊主答复雨天调位：
+     * accept=true 同意（换摊位、重生成二维码、生成差额账单）；
+     * accept=false 时 decision 必填：ABANDON 放弃经营 / RISK_SELF 保留原位风险自担。
+     */
+    @PostMapping("/rain-relocations/{id}/respond")
+    public RainRelocation respondRain(@PathVariable Long id,
+                                      @RequestBody RainRelocationService.RespondReq req) {
+        return rainRelocationService.respond(id, req, me());
     }
 }

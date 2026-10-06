@@ -129,7 +129,9 @@ function adjType(t) {
     FEE_WAIVER: { text: '费用减免', type: 'success' },
     DEPOSIT_PENALTY: { text: '保证金扣罚', type: 'danger' },
     CREDIT_ADJUST: { text: '信用调整', type: 'warning' },
-    CATEGORY_CHANGE: { text: '品类变更', type: 'info' }
+    CATEGORY_CHANGE: { text: '品类变更', type: 'info' },
+    RAIN_ABANDON: { text: '雨天拒绝-放弃经营', type: 'danger' },
+    RAIN_RISK_SELF: { text: '雨天拒绝-风险自担', type: 'danger' }
   }
   return map[t] || { text: t, type: 'info' }
 }

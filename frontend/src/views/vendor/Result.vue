@@ -6,8 +6,8 @@
         <template #header>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span><b>{{ r.application?.event?.name }}</b>（{{ r.application?.event?.marketDate }}）</span>
-            <el-tag :type="r.status === 'RELOCATED' ? 'warning' : 'success'">
-              {{ r.status === 'RELOCATED' ? '已调位' : '已分配' }}
+            <el-tag :type="(RESULT_STATUS[r.status] || {}).type || 'success'">
+              {{ (RESULT_STATUS[r.status] || {}).text || '已分配' }}
             </el-tag>
           </div>
         </template>
@@ -66,7 +66,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import QRCode from 'qrcode'
 import api from '../../api'
-import { CATEGORIES } from '../../utils/dict'
+import { CATEGORIES, RESULT_STATUS } from '../../utils/dict'
 
 const categories = CATEGORIES
 const results = ref([])

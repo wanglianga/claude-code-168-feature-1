@@ -28,7 +28,8 @@ public class Payment {
     @JoinColumn(name = "vendor_id", nullable = false)
     private User vendor;
 
-    /** STALL_FEE 摊位费 / SANITATION 卫生费 / POWER 电费 / DEPOSIT 保证金 / PENALTY 扣罚款 */
+    /** STALL_FEE 摊位费 / SANITATION 卫生费 / POWER 电费 / DEPOSIT 保证金 / PENALTY 扣罚款 /
+     *  FEE_DIFF 雨天调位补收差额 / FEE_REFUND 雨天调位应退差额 */
     @Column(nullable = false, length = 20)
     private String itemType;
 

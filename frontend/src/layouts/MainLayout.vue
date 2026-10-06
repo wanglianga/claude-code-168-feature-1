@@ -10,6 +10,7 @@
         <template v-if="role === 'VENDOR'">
           <el-menu-item index="/apply"><el-icon><EditPen /></el-icon><span>摊位报名</span></el-menu-item>
           <el-menu-item index="/result"><el-icon><Ticket /></el-icon><span>抽签结果与缴费</span></el-menu-item>
+          <el-menu-item index="/rain"><el-icon><Sunny /></el-icon><span>雨天调位通知</span></el-menu-item>
           <el-menu-item index="/samples"><el-icon><Food /></el-icon><span>食品留样</span></el-menu-item>
           <el-menu-item index="/trace"><el-icon><Document /></el-icon><span>信用与追溯</span></el-menu-item>
         </template>
@@ -21,6 +22,7 @@
           <el-menu-item index="/admin/events"><el-icon><Calendar /></el-icon><span>集市与报名审核</span></el-menu-item>
           <el-menu-item index="/admin/stalls"><el-icon><Grid /></el-icon><span>区域摊位管理</span></el-menu-item>
           <el-menu-item index="/admin/lottery"><el-icon><MagicStick /></el-icon><span>抽签管理</span></el-menu-item>
+          <el-menu-item index="/admin/rain"><el-icon><Umbrella /></el-icon><span>雨天临时调位</span></el-menu-item>
           <el-menu-item index="/admin/complaints"><el-icon><ChatDotSquare /></el-icon><span>投诉处理</span></el-menu-item>
           <el-menu-item index="/admin/adjustments"><el-icon><SetUp /></el-icon><span>调整与追溯</span></el-menu-item>
           <el-menu-item index="/admin/dashboard"><el-icon><DataAnalysis /></el-icon><span>复盘看板</span></el-menu-item>
@@ -55,7 +57,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
-import { Shop, HomeFilled, EditPen, Ticket, Food, Document, Iphone, View, Calendar, Grid, MagicStick, ChatDotSquare, SetUp, DataAnalysis, Memo, Fold, Expand, ArrowDown } from '@element-plus/icons-vue'
+import { Shop, HomeFilled, EditPen, Ticket, Food, Document, Iphone, View, Calendar, Grid, MagicStick, ChatDotSquare, SetUp, DataAnalysis, Memo, Fold, Expand, ArrowDown, Sunny, Umbrella } from '@element-plus/icons-vue'
 
 const auth = useAuthStore()
 const router = useRouter()

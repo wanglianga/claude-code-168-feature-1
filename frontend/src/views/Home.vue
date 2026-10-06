@@ -21,6 +21,16 @@
         <el-col :span="6"><el-card><div class="stat">{{ applications.length }}</div><div class="stat-label">我的报名</div></el-card></el-col>
         <el-col :span="6"><el-card><div class="stat">{{ unpaidCount }}</div><div class="stat-label">待缴费用</div></el-card></el-col>
       </el-row>
+      <el-card class="mt" v-if="pendingRain.length">
+        <el-alert type="warning" :closable="false" show-icon
+          :title="`有 ${pendingRain.length} 张雨天临时调位通知待您确认：低洼摊位积水，市场已安排硬化路面位置。`" />
+        <div style="margin-top:8px">
+          <el-tag v-for="r in pendingRain" :key="r.id" type="warning" style="margin-right:8px">
+            #{{ r.id }} {{ r.oldStallNo }} → {{ r.newStallNo }}
+          </el-tag>
+          <el-button type="primary" size="small" style="margin-left:8px" @click="$router.push('/rain')">去确认</el-button>
+        </div>
+      </el-card>
       <el-card class="mt" v-if="latestResult">
         <div class="card-title">最新抽签结果</div>
         <el-descriptions :column="3" border>
@@ -88,18 +98,21 @@ const payments = ref([])
 const results = ref([])
 const events = ref([])
 const stats = ref({ events: 0, vendors: 0, stalls: 0, audits: 0 })
+const rainList = ref([])
 
 const latestResult = computed(() => results.value[0])
 const unpaidCount = computed(() => payments.value.filter(p => p.status === 'UNPAID').length)
 const openEvent = computed(() => events.value.find(e => e.status === 'OPEN'))
+const pendingRain = computed(() => rainList.value.filter(r => r.status === 'PROPOSED'))
 
 onMounted(async () => {
   if (role.value === 'VENDOR') {
-    const [apps, pays, res, evs] = await Promise.all([
+    const [apps, pays, res, evs, rain] = await Promise.all([
       api.get('/vendor/applications'), api.get('/vendor/payments'),
-      api.get('/vendor/results'), api.get('/meta/events')
+      api.get('/vendor/results'), api.get('/meta/events'),
+      api.get('/vendor/rain-relocations')
     ])
-    applications.value = apps; payments.value = pays; results.value = res; events.value = evs
+    applications.value = apps; payments.value = pays; results.value = res; events.value = evs; rainList.value = rain
   } else if (role.value === 'ADMIN') {
     const [evs, vendors, stalls, audits] = await Promise.all([
       api.get('/admin/events'), api.get('/admin/vendors'),

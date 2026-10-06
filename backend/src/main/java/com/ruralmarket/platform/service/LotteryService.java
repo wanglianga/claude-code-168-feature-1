@@ -116,7 +116,10 @@ public class LotteryService {
         }
         List<Application> apps = applicationRepository.findByEventIdAndStatus(event.getId(), "APPROVED");
         if (apps.isEmpty()) throw new BizException("没有已通过审核的报名，无法抽签");
-        List<Stall> stalls = stallRepository.findByActiveTrueOrderByStallNo();
+        // 应急备用位（硬化路面预留）仅用于临时/雨天调位，不参与常规抽签
+        List<Stall> stalls = stallRepository.findByActiveTrueOrderByStallNo().stream()
+                .filter(s -> !Boolean.TRUE.equals(s.getReservedEmergency()))
+                .toList();
         if (stalls.isEmpty()) throw new BizException("没有可用摊位，请先配置摊位");
 
         List<AppInput> appInputs = apps.stream().map(a -> new AppInput(
