@@ -1,5 +1,11 @@
 <template>
   <div class="page">
+    <el-alert v-if="pendingRelocations" type="warning" :closable="false" class="mb"
+      :title="`您有 ${pendingRelocations} 条雨天调位通知待确认，请前往「雨天调位通知」处理`">
+      <el-button type="warning" size="small" style="margin-left:12px" @click="$router.push('/relocations')">
+        去处理
+      </el-button>
+    </el-alert>
     <el-empty v-if="!results.length" description="暂无抽签结果，请先报名并等待集市抽签" />
     <div v-for="r in results" :key="r.id" class="mb">
       <el-card>
@@ -72,6 +78,7 @@ const categories = CATEGORIES
 const results = ref([])
 const payments = ref([])
 const qrMap = ref({})
+const pendingRelocations = ref(0)
 
 function parseJson(s) { try { return JSON.parse(s) } catch { return [] } }
 function payText(s) {
@@ -90,9 +97,12 @@ async function pay(p) {
 }
 
 onMounted(async () => {
-  const [res, pays] = await Promise.all([api.get('/vendor/results'), api.get('/vendor/payments')])
+  const [res, pays, relos] = await Promise.all([
+    api.get('/vendor/results'), api.get('/vendor/payments'), api.get('/vendor/rain-relocations')
+  ])
   results.value = res
   payments.value = pays
+  pendingRelocations.value = relos.filter(t => t.status === 'PENDING').length
   for (const r of res) {
     qrMap.value[r.id] = await QRCode.toDataURL(r.qrToken, { width: 180, margin: 1 })
   }

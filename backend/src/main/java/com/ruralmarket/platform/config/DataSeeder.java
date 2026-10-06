@@ -50,21 +50,27 @@ public class DataSeeder implements CommandLineRunner {
         StallZone zoneC = createZone("C", "C区-活禽隔离区", "LIVE_POULTRY", false, true, "25", 60, "独立隔离，远离食品区");
         StallZone zoneD = createZone("D", "D区-果蔬区", "VEG_FRUIT", false, false, "15", 0, "靠近集市西门");
 
-        // ===== 摊位 =====
+        // ===== 摊位（A/B/C 区为硬化路面；D 区 D-01~D-04 为低洼泥地，暴雨易积水） =====
+        double[] distA = {25, 22, 18, 15, 12, 9, 6, 2};
         for (int i = 1; i <= 8; i++) {
-            createStall(zoneA, "A-" + pad(i), i <= 4, 5.0, i == 8, true);
+            createStall(zoneA, "A-" + pad(i), i <= 4, 5.0, i == 8, true, distA[i - 1], false, true);
         }
+        double[] distB = {20, 17, 14, 11, 8, 2};
         for (int i = 1; i <= 6; i++) {
-            createStall(zoneB, "B-" + pad(i), true, 4.0, i == 6, true);
+            createStall(zoneB, "B-" + pad(i), true, 4.0, i == 6, true, distB[i - 1], false, true);
         }
+        double[] distC = {35, 32, 30, 28};
         for (int i = 1; i <= 4; i++) {
-            createStall(zoneC, "C-" + pad(i), false, 6.0, false, true);
+            createStall(zoneC, "C-" + pad(i), false, 6.0, false, true, distC[i - 1], false, true);
         }
+        // D 区果蔬区：D-01~D-04 低洼未硬化（雨天积水重点调出对象），D-05~D-08 已硬化
+        double[] distD = {3, 30, 28, 26, 24, 22, 20, 18};
         for (int i = 1; i <= 8; i++) {
-            createStall(zoneD, "D-" + pad(i), false, 5.0, i == 1, true);
+            boolean low = i <= 4;
+            createStall(zoneD, "D-" + pad(i), false, 5.0, i == 1, true, distD[i - 1], low, !low);
         }
         // 消防通道：不启用、不参与分配
-        createStall(zoneA, "FIRE-01", false, null, true, false);
+        createStall(zoneA, "FIRE-01", false, null, true, false, 0.0, false, true);
 
         // ===== 赶集日 =====
         MarketEvent event = new MarketEvent();
@@ -113,7 +119,8 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void createStall(StallZone zone, String no, boolean power, Double maxLen,
-                             boolean nearFire, boolean active) {
+                             boolean nearFire, boolean active, Double fireLaneDistance,
+                             boolean lowLying, boolean hardened) {
         Stall s = new Stall();
         s.setZone(zone);
         s.setStallNo(no);
@@ -121,6 +128,9 @@ public class DataSeeder implements CommandLineRunner {
         s.setMaxVehicleLength(maxLen);
         s.setNearFireLane(nearFire);
         s.setActive(active);
+        s.setFireLaneDistance(fireLaneDistance);
+        s.setLowLying(lowLying);
+        s.setHardened(hardened);
         stallRepository.save(s);
     }
 }

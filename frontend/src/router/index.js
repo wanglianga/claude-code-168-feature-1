@@ -12,6 +12,7 @@ const routes = [
       // 摊主
       { path: 'apply', component: () => import('../views/vendor/Apply.vue'), meta: { role: 'VENDOR' } },
       { path: 'result', component: () => import('../views/vendor/Result.vue'), meta: { role: 'VENDOR' } },
+      { path: 'relocations', component: () => import('../views/vendor/Relocations.vue'), meta: { role: 'VENDOR' } },
       { path: 'samples', component: () => import('../views/vendor/Samples.vue'), meta: { role: 'VENDOR' } },
       { path: 'trace', component: () => import('../views/vendor/Trace.vue'), meta: { role: 'VENDOR' } },
       // 工作人员
@@ -22,6 +23,7 @@ const routes = [
       { path: 'admin/stalls', component: () => import('../views/admin/Stalls.vue'), meta: { role: 'ADMIN' } },
       { path: 'admin/lottery', component: () => import('../views/admin/Lottery.vue'), meta: { role: 'ADMIN' } },
       { path: 'admin/complaints', component: () => import('../views/admin/Complaints.vue'), meta: { role: 'ADMIN' } },
+      { path: 'admin/rain-relocation', component: () => import('../views/admin/RainRelocation.vue'), meta: { role: 'ADMIN' } },
       { path: 'admin/adjustments', component: () => import('../views/admin/Adjustments.vue'), meta: { role: 'ADMIN' } },
       { path: 'admin/dashboard', component: () => import('../views/admin/Dashboard.vue'), meta: { role: 'ADMIN' } },
       { path: 'admin/audits', component: () => import('../views/admin/Audits.vue'), meta: { role: 'ADMIN' } }

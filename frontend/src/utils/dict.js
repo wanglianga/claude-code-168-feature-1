@@ -58,6 +58,14 @@ export const RESULT_STATUS = {
   CANCELLED: { text: '已取消', type: 'info' }
 }
 
+export const RELOCATION_STATUS = {
+  PENDING: { text: '待摊主确认', type: 'warning' },
+  CONFIRMED: { text: '已确认调位', type: 'success' },
+  REJECTED: { text: '摊主已拒绝', type: 'danger' },
+  ABANDONED: { text: '放弃经营', type: 'info' },
+  KEEP_ORIGINAL: { text: '保留原位(风险自担)', type: 'warning' }
+}
+
 export function catName(code) { return CATEGORIES[code] || code || '-' }
 
 export function fmtTime(t) { return t ? String(t).replace('T', ' ').slice(0, 16) : '-' }

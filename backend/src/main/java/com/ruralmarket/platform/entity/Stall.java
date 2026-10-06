@@ -30,6 +30,17 @@ public class Stall {
     @Column(nullable = false)
     private Boolean nearFireLane = false;
 
+    /** 距消防通道距离（米），用于雨天调位时评估替代位置 */
+    private Double fireLaneDistance;
+
+    /** 是否低洼易积水（暴雨时需优先调出） */
+    @Column(nullable = false)
+    private Boolean lowLying = false;
+
+    /** 是否硬化路面（雨天调位的可替代位置须为硬化路面） */
+    @Column(nullable = false)
+    private Boolean hardened = false;
+
     /** 是否启用（消防通道本身等不用于分配的位置设为 false） */
     @Column(nullable = false)
     private Boolean active = true;
